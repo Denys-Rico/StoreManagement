@@ -38,12 +38,33 @@ public class Cashier {
                     main.viewSales();
                     break;
                 case 4:
-                    System.out.println("Logging out...");
-                    break;
-                default:
-                    System.out.println("Invalid choice.");
-            }
+                    System.out.println("\nLogging out...");
+                    // ✅ Return to login page
+                    String[] userInfo = Login.loginUser(); 
+                    if (userInfo != null) {
+                        int newUserId = Integer.parseInt(userInfo[0]);
+                        String newRole = userInfo[1];
+                        String newUsername = userInfo[2];
 
-        } while (choice != 4);
+                        switch (newRole.toLowerCase()) {
+                            case "manager":
+                                Manager.showMenu();
+                                break;
+                            case "cashier":
+                                Cashier.showMenu();
+                                break;
+                            case "customer":
+                                Customer.showMenu(newUserId, newUsername);
+                                break;
+                            default:
+                                System.out.println("Unknown role. Returning to login.");
+                                Login.loginUser();
+                        }
+                    }
+                    return; // ✅ Exit the current loop after logout
+                default:
+                    System.out.println("Invalid choice!");
+            }
+        } while (choice != 0);
     }
 }

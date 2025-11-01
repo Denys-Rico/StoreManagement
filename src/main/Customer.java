@@ -7,13 +7,13 @@ public class Customer {
     static Scanner sc = new Scanner(System.in);
     static config db = new config();
 
-    
     public static void showMenu(int userId, String username) {
         int choice;
 
         do {
             System.out.println("\n=== CUSTOMER DASHBOARD ===");
             System.out.println("Welcome, " + username + "!");
+            System.out.println("Your User ID: " + userId); //Optional: show user ID
             System.out.println("1. View Products");
             System.out.println("2. Buy Product");
             System.out.println("3. View My Purchases");
@@ -33,15 +33,36 @@ public class Customer {
                     viewPurchases(userId);
                     break;
                 case 0:
-                    System.out.println("Logging out...");
-                    break;
+                    System.out.println("\nLogging out...");
+                    // ✅ Return to login page
+                    String[] userInfo = Login.loginUser(); 
+                    if (userInfo != null) {
+                        int newUserId = Integer.parseInt(userInfo[0]);
+                        String newRole = userInfo[1];
+                        String newUsername = userInfo[2];
+
+                        switch (newRole.toLowerCase()) {
+                            case "manager":
+                                Manager.showMenu();
+                                break;
+                            case "cashier":
+                                Cashier.showMenu();
+                                break;
+                            case "customer":
+                                Customer.showMenu(newUserId, newUsername);
+                                break;
+                            default:
+                                System.out.println("Unknown role. Returning to login.");
+                                Login.loginUser();
+                        }
+                    }
+                    return; // ✅ Exit the current loop after logout
                 default:
                     System.out.println("Invalid choice!");
             }
         } while (choice != 0);
     }
 
-   
     public static void viewProducts() {
         String query = "SELECT * FROM tbl_product";
         String[] headers = {"ID", "Name", "Price"};
@@ -49,8 +70,11 @@ public class Customer {
         db.viewRecords(query, headers, columns);
     }
 
-   
     public static void buyProduct(int userId, String username) {
+        System.out.println("\n=== BUY PRODUCT ===");
+        System.out.println("Customer Name: " + username);
+        System.out.println("User ID: " + userId);
+
         viewProducts();
 
         System.out.print("Enter Product ID to buy: ");
@@ -71,6 +95,7 @@ public class Customer {
         double total = price * quantity;
 
         System.out.println("\n=== Order Summary ===");
+        System.out.println("User ID: " + userId);
         System.out.println("Product ID: " + productId);
         System.out.println("Quantity: " + quantity);
         System.out.println("Branch: " + branch);
@@ -83,26 +108,24 @@ public class Customer {
             String insertQuery = "INSERT INTO tbl_sales(u_id, p_id, quantity, sale_date, total, branch, location) " +
                                  "VALUES (?, ?, ?, datetime('now'), ?, ?, ?)";
             db.addRecord(insertQuery,
-                         String.valueOf(userId),       
-                         String.valueOf(productId),    
-                         String.valueOf(quantity),     
-                         String.valueOf(total),        
-                         branch,                       
-                         location);                    
-            System.out.println("✅ Purchase successful!");
+                         String.valueOf(userId),
+                         String.valueOf(productId),
+                         String.valueOf(quantity),
+                         String.valueOf(total),
+                         branch,
+                         location);
+            System.out.println("✅ Purchase successful for " + username + " (User ID: " + userId + ")!");
         } else {
             System.out.println("❌ Purchase cancelled.");
         }
     }
 
     public static void viewPurchases(int userId) {
-    String query = "SELECT s.s_id, p.p_name, s.quantity, s.total, s.branch, s.location, s.sale_date " +
-                   "FROM tbl_sales s JOIN tbl_product p ON s.p_id = p.p_id " +
-                   "WHERE s.u_id = ?";
-    String[] headers = {"Sale ID", "Product", "Qty", "Total", "Branch", "Location", "Date"};
-    String[] columns = {"s_id", "p_name", "quantity", "total", "branch", "location", "sale_date"};
-    db.viewRecords(query, headers, columns, String.valueOf(userId));
-}
-
-    
+        String query = "SELECT s.s_id, p.p_name, s.quantity, s.total, s.branch, s.location, s.sale_date " +
+                       "FROM tbl_sales s JOIN tbl_product p ON s.p_id = p.p_id " +
+                       "WHERE s.u_id = ?";
+        String[] headers = {"Sale ID", "Product", "Qty", "Total", "Branch", "Location", "Date"};
+        String[] columns = {"s_id", "p_name", "quantity", "total", "branch", "location", "sale_date"};
+        db.viewRecords(query, headers, columns, String.valueOf(userId));
+    }
 }

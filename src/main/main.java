@@ -39,8 +39,8 @@ public class main {
     
     public static void viewUser() {
         String votersQuery = "SELECT * FROM tbl_user";
-        String[] votersHeaders = {"ID", "Name", "Gender", "Role"};
-        String[] votersColumns = {"u_id", "u_name", "u_gender", "u_role"};
+        String[] votersHeaders = {"ID", "Name", "Password", "Role"};
+        String[] votersColumns = {"u_id", "u_name", "u_pass", "u_role"};
         config cf = new config();
         cf.viewRecords(votersQuery, votersHeaders, votersColumns);
     }

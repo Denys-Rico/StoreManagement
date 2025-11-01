@@ -35,8 +35,30 @@ public class Manager {
                     productMenu();
                     break;
                 case 0:
-                    System.out.println("Logging out...");
-                    break;
+                    System.out.println("\nLogging out...");
+                    // ✅ Return to login page
+                    String[] userInfo = Login.loginUser(); 
+                    if (userInfo != null) {
+                        int newUserId = Integer.parseInt(userInfo[0]);
+                        String newRole = userInfo[1];
+                        String newUsername = userInfo[2];
+
+                        switch (newRole.toLowerCase()) {
+                            case "manager":
+                                Manager.showMenu();
+                                break;
+                            case "cashier":
+                                Cashier.showMenu();
+                                break;
+                            case "customer":
+                                Customer.showMenu(newUserId, newUsername);
+                                break;
+                            default:
+                                System.out.println("Unknown role. Returning to login.");
+                                Login.loginUser();
+                        }
+                    }
+                    return; // ✅ Exit the current loop after logout
                 default:
                     System.out.println("Invalid choice!");
             }
@@ -46,8 +68,8 @@ public class Manager {
 
     public static void viewUsers() {
         String query = "SELECT * FROM tbl_user";
-        String[] headers = {"ID", "Name", "Gender", "Role", "Status"};
-        String[] columns = {"u_id", "u_name", "u_gender", "u_role", "u_status"};
+        String[] headers = {"ID", "Name", "Email", "Role", "Status"};
+        String[] columns = {"u_id", "u_name", "u_email", "u_role", "u_status"};
         db.viewRecords(query, headers, columns);
     }
 
@@ -67,8 +89,8 @@ public class Manager {
     public static void deleteUser() {
         
         String viewQuery = "SELECT * FROM tbl_user";
-        String[] headers = {"ID", "Name", "Gender", "Role", "Status"};
-        String[] columns = {"u_id", "u_name", "u_gender", "u_role", "u_status"};
+        String[] headers = {"ID", "Name", "Email", "Role", "Status"};
+        String[] columns = {"u_id", "u_name", "u_email", "u_role", "u_status"};
         db.viewRecords(viewQuery, headers, columns);
 
         System.out.print("Enter user ID to delete: ");
@@ -198,7 +220,7 @@ public class Manager {
     String deleteQuery = "DELETE FROM tbl_sales WHERE s_id = ?";
     db.deleteRecord(deleteQuery, saleId);
 
-    System.out.println("🗑️ Sale deleted successfully!");
+    System.out.println("Sale deleted successfully!");
 
     
     db.viewRecords(query, headers, columns);
