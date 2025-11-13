@@ -36,7 +36,7 @@ public class Manager {
                     break;
                 case 0:
                     System.out.println("\nLogging out...");
-                    // ✅ Return to login page
+                    
                     String[] userInfo = Login.loginUser(); 
                     if (userInfo != null) {
                         int newUserId = Integer.parseInt(userInfo[0]);
@@ -58,7 +58,7 @@ public class Manager {
                                 Login.loginUser();
                         }
                     }
-                    return; // ✅ Exit the current loop after logout
+                    return; 
                 default:
                     System.out.println("Invalid choice!");
             }

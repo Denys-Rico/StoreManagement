@@ -18,14 +18,14 @@ public class Login {
         System.out.println("3. Exit");
         System.out.print("Enter your choice: ");
         int choice = sc.nextInt();
-        sc.nextLine(); // consume newline
+        sc.nextLine(); 
 
         switch (choice) {
             case 1:
                 return performLogin(cf, sc);
             case 2:
                 registerUser(cf, sc);
-                return loginUser(); // go back to login after registering
+                return loginUser(); 
             case 3:
                 System.out.println("Exiting the system... Goodbye!");
                 System.exit(0);
@@ -43,7 +43,7 @@ public class Login {
         System.out.print("Enter password: ");
         String password = sc.nextLine();
 
-        // Hash entered password for verification
+        
         String hashedPassword = hashPassword(password);
 
         String query = "SELECT * FROM tbl_user WHERE u_email = ? AND u_password = ?";
@@ -91,7 +91,7 @@ public class Login {
         System.out.print("Enter Password: ");
         String password = sc.nextLine();
 
-        // Hash password before saving
+        
         String hashedPassword = hashPassword(password);
 
         String status;
@@ -108,7 +108,7 @@ public class Login {
         System.out.println("\n✅ Registration successful! You can now log in.");
     }
 
-    // ✅ Hashing function using SHA-256
+    
     private static String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");

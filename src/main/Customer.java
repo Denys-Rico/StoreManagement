@@ -13,7 +13,7 @@ public class Customer {
         do {
             System.out.println("\n=== CUSTOMER DASHBOARD ===");
             System.out.println("Welcome, " + username + "!");
-            System.out.println("Your User ID: " + userId); //Optional: show user ID
+            System.out.println("Your User ID: " + userId); 
             System.out.println("1. View Products");
             System.out.println("2. Buy Product");
             System.out.println("3. View My Purchases");
@@ -34,7 +34,7 @@ public class Customer {
                     break;
                 case 0:
                     System.out.println("\nLogging out...");
-                    // ✅ Return to login page
+                    
                     String[] userInfo = Login.loginUser(); 
                     if (userInfo != null) {
                         int newUserId = Integer.parseInt(userInfo[0]);
@@ -56,7 +56,7 @@ public class Customer {
                                 Login.loginUser();
                         }
                     }
-                    return; // ✅ Exit the current loop after logout
+                    return; 
                 default:
                     System.out.println("Invalid choice!");
             }
