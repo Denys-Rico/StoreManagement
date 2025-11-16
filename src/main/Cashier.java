@@ -77,9 +77,16 @@ public class Cashier {
     }
 
     public static void updateStock() {
+        
+         String viewSql = "SELECT p_id, p_name, p_price, p_stock, p_expiration FROM tbl_product";
+        String[] headers = {"ID", "Name", "Price", "Stock", "Expiration"};
+        String[] columns = {"p_id", "p_name", "p_price", "p_stock", "p_expiration"};
+        db.viewRecords(viewSql, headers, columns);
+        
         System.out.print("Enter Product ID to update: ");
         int pid = sc.nextInt();
         sc.nextLine();
+        
         System.out.print("Enter new stock quantity: ");
         int stock = sc.nextInt();
         sc.nextLine();

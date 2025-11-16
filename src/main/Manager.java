@@ -17,7 +17,7 @@ public class Manager {
             System.out.println("| 2.                -- Approve Pending Users --                 |");
             System.out.println("| 3.                    -- Delete User --                       |");
             System.out.println("| 4.                -- Product Management --                    |");
-            System.out.println("| 0.                       -- Logout --                         |");
+            System.out.println("| 5.                       -- Logout --                         |");
             System.out.println("=================================================================");
             System.out.print("Enter choice:");
             choice = sc.nextInt();
@@ -44,7 +44,7 @@ public class Manager {
                     if (!askContinue()) return;
                     break;
                     
-                case 0:
+                case 5:
                     System.out.println("\nLogging out...");
                     
                     String[] userInfo = Login.loginUser(); 
@@ -156,7 +156,7 @@ public class Manager {
             System.out.println("3. Update Product");
             System.out.println("4. Delete Product");
             System.out.println("5. Delete Sale");
-            System.out.println("0. Back");
+            System.out.println("6. Back");
             System.out.print("Enter choice: ");
             choice = sc.nextInt();
             sc.nextLine();
@@ -164,26 +164,31 @@ public class Manager {
             switch (choice) {
                 case 1:
                     addProduct();
+                    if (!askContinue()) return;
                     break;
                 case 2:
                     viewProducts();
+                    if (!askContinue()) return;
                     break;
                 case 3:
                     updateProduct();
+                    if (!askContinue()) return;
                     break;
                 case 4:
                     deleteProduct();
+                    if (!askContinue()) return;
                     break;
                 case 5:
                     deleteSale();
+                    if (!askContinue()) return;
                     break;
-                case 0:
+                case 6:
                     System.out.println("Returning to main menu...");
                     break;
                 default:
                     System.out.println("Invalid choice!");
             }
-        } while (choice != 0);
+        } while (choice != 6);
     }
 
     public static void viewProducts() {
