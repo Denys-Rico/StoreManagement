@@ -1,5 +1,6 @@
 package Main;
 
+import static Main.Cashier.askContinue;
 import config.config;
 import java.util.Scanner;
 
@@ -11,29 +12,38 @@ public class Manager {
         int choice;
 
         do {
-            System.out.println("\n=== MANAGER DASHBOARD ===");
-            System.out.println("1. View Users");
-            System.out.println("2. Approve Pending Users");
-            System.out.println("3. Delete User");
-            System.out.println("4. Product Management");
-            System.out.println("0. Logout");
-            System.out.print("Enter choice: ");
+            System.out.println("\n====================== MANAGER DASHBOARD ========================");
+            System.out.println("| 1                     -- View Users --                        |");
+            System.out.println("| 2.                -- Approve Pending Users --                 |");
+            System.out.println("| 3.                    -- Delete User --                       |");
+            System.out.println("| 4.                -- Product Management --                    |");
+            System.out.println("| 0.                       -- Logout --                         |");
+            System.out.println("=================================================================");
+            System.out.print("Enter choice:");
             choice = sc.nextInt();
             sc.nextLine();
 
             switch (choice) {
                 case 1:
                     viewUsers();
+                    if (!askContinue()) return;
                     break;
+                    
                 case 2:
                     approveUser();
+                    if (!askContinue()) return;
                     break;
+                    
                 case 3:
                     deleteUser();
+                    if (!askContinue()) return;
                     break;
+                    
                 case 4:
                     productMenu();
+                    if (!askContinue()) return;
                     break;
+                    
                 case 0:
                     System.out.println("\nLogging out...");
                     
@@ -64,6 +74,13 @@ public class Manager {
             }
         } while (choice != 0);
     }
+        
+        public static boolean askContinue() {
+    Scanner sc = new Scanner(System.in);
+    System.out.print("\nDo you want to continue? (Y/N): ");
+    String input = sc.nextLine();
+    return input.equalsIgnoreCase("Y");
+}
 
 
     public static void viewUsers() {
@@ -81,28 +98,52 @@ public class Manager {
 
         String query = "UPDATE tbl_user SET u_status = 'Approved' WHERE u_id = ?";
         db.updateRecord(query, id);
-        System.out.println("✅ User approved successfully!");
+        System.out.println("User approved successfully!");
 
         viewUsers();
     }
 
     public static void deleteUser() {
-        
-        String viewQuery = "SELECT * FROM tbl_user";
-        String[] headers = {"ID", "Name", "Email", "Role", "Status"};
-        String[] columns = {"u_id", "u_name", "u_email", "u_role", "u_status"};
-        db.viewRecords(viewQuery, headers, columns);
 
-        System.out.print("Enter user ID to delete: ");
-        int id = sc.nextInt();
-        sc.nextLine();
+    String viewQuery = "SELECT * FROM tbl_user";
+    String[] headers = {"ID", "Name", "Email", "Role", "Status"};
+    String[] columns = {"u_id", "u_name", "u_email", "u_role", "u_status"};
+    db.viewRecords(viewQuery, headers, columns);
 
-        String query = "DELETE FROM tbl_user WHERE u_id = ?";
-        db.updateRecord(query, id);
-        System.out.println("🗑️ User deleted successfully!");
+    System.out.print("\nEnter user IDs to delete (comma or space separated): ");
+    String input = sc.nextLine();
 
-        db.viewRecords(viewQuery, headers, columns);
+    
+    String[] parts = input.split("[, ]+");
+
+  
+    System.out.print("Are you sure you want to delete these users? (Y/N): ");
+    String confirm = sc.nextLine();
+    if (!confirm.equalsIgnoreCase("Y")) {
+        System.out.println("Deletion cancelled.");
+        return;
     }
+
+    System.out.println("\nDeleting selected users...");
+
+    for (String part : parts) {
+        try {
+            int id = Integer.parseInt(part.trim());
+
+            String query = "DELETE FROM tbl_user WHERE u_id = ?";
+            db.updateRecord(query, id);
+
+            System.out.println("User with ID " + id + " deleted.");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid entry skipped: " + part);
+        }
+    }
+
+    System.out.println("\nUpdated user list:");
+    db.viewRecords(viewQuery, headers, columns);
+}
+
 
 
 
@@ -146,46 +187,77 @@ public class Manager {
     }
 
     public static void viewProducts() {
-        String query = "SELECT * FROM tbl_product";
-        String[] headers = {"ID", "Name", "Price"};
-        String[] columns = {"p_id", "p_name", "p_price"};
-        db.viewRecords(query, headers, columns);
-    }
+    
+    String query = "SELECT p_id, p_name, p_price, p_stock, p_expiration, " +
+                   "CASE " +
+                   "WHEN p_stock = 0 THEN 'Unavailable' " +
+                   "WHEN p_expiration IS NOT NULL AND DATE(p_expiration) < DATE('now') THEN 'Expired' " +
+                   "ELSE 'Available' " +
+                   "END AS status " +
+                   "FROM tbl_product";
 
-    public static void addProduct() {
-        System.out.println("\n=== Add New Product ===");
-        System.out.print("Enter Product Name: ");
-        String name = sc.nextLine();
+    String[] headers = {"ID", "Name", "Price", "Stock", "Expiration", "Status"};
+    String[] columns = {"p_id", "p_name", "p_price", "p_stock", "p_expiration", "status"};
 
-        System.out.print("Enter Product Price: ");
-        double price = sc.nextDouble();
-        sc.nextLine();
+    db.viewRecords(query, headers, columns);
+}
 
-        String query = "INSERT INTO tbl_product(p_name, p_price) VALUES (?, ?)";
-        db.addRecord(query, name, String.valueOf(price));
 
-        System.out.println("✅ Product added successfully!");
-        viewProducts();
-    }
+public static void addProduct() {
+    System.out.println("\n=== Add New Product ===");
+    System.out.print("Enter Product Name: ");
+    String name = sc.nextLine();
 
-    public static void updateProduct() {
-        viewProducts();
-        System.out.print("Enter Product ID to update: ");
-        int id = sc.nextInt();
-        sc.nextLine();
+    System.out.print("Enter Product Price: ");
+    double price = sc.nextDouble();
+    sc.nextLine();
 
-        System.out.print("Enter new Product Name: ");
-        String name = sc.nextLine();
-        System.out.print("Enter new Product Price: ");
-        double price = sc.nextDouble();
-        sc.nextLine();
+    System.out.print("Enter Stock Quantity: ");
+    int stock = sc.nextInt();
+    sc.nextLine();
+    if (stock < 0) stock = 0;
 
-        String query = "UPDATE tbl_product SET p_name = ?, p_price = ? WHERE p_id = ?";
-        db.updateRecord(query, name, String.valueOf(price), id);
-        System.out.println("✅ Product updated successfully!");
+    System.out.print("Enter Expiration Date (YYYY-MM-DD) or leave blank: ");
+    String expiration = sc.nextLine();
+    if (expiration.isEmpty()) expiration = null;
 
-        viewProducts();
-    }
+    String query = "INSERT INTO tbl_product(p_name, p_price, p_stock, p_expiration) VALUES (?, ?, ?, ?)";
+    db.addRecord(query, name, String.valueOf(price), String.valueOf(stock), expiration);
+
+    System.out.println("Product added successfully!");
+    viewProducts();
+}
+
+
+public static void updateProduct() {
+    viewProducts();
+    System.out.print("\nEnter Product ID to update: ");
+    int id = sc.nextInt();
+    sc.nextLine();
+
+    System.out.print("Enter new Product Name: ");
+    String name = sc.nextLine();
+
+    System.out.print("Enter new Product Price: ");
+    double price = sc.nextDouble();
+    sc.nextLine();
+
+    System.out.print("Enter new Stock Quantity: ");
+    int stock = sc.nextInt();
+    sc.nextLine();
+    if (stock < 0) stock = 0;
+
+    System.out.print("Enter new Expiration Date (YYYY-MM-DD) or leave blank: ");
+    String expiration = sc.nextLine();
+    if (expiration.isEmpty()) expiration = null;
+
+    String query = "UPDATE tbl_product SET p_name = ?, p_price = ?, p_stock = ?, p_expiration = ? WHERE p_id = ?";
+    db.updateRecord(query, name, String.valueOf(price), String.valueOf(stock), expiration, id);
+
+    System.out.println("Product updated successfully!");
+    viewProducts();
+}
+
 
     public static void deleteProduct() {
         viewProducts();

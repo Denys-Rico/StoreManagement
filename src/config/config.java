@@ -13,7 +13,7 @@ public class config {
         try {
             Class.forName("org.sqlite.JDBC");
             con = DriverManager.getConnection("jdbc:sqlite:storeDB.db");
-            System.out.println("Connection Successful");
+           
         } catch (Exception e) {
             System.out.println("Connection Failed: " + e.getMessage());
         }
@@ -32,9 +32,9 @@ public class config {
             }
 
             pstmt.executeUpdate();
-            System.out.println("✅ Record added successfully!");
+            System.out.println("Record added successfully!");
         } catch (SQLException e) {
-            System.out.println("❌ Error adding record: " + e.getMessage());
+            System.out.println("Error adding record: " + e.getMessage());
         }
     }
 
@@ -207,4 +207,30 @@ public class config {
     }
 }
 
+    // ======================
+// GET SINGLE VALUE (String, Int, Double etc.)
+// ======================
+public String getSingleValue(String query, Object... params) {
+    String result = null;
+    try (Connection conn = connectDB();
+         PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+        // Set parameters if any
+        for (int i = 0; i < params.length; i++) {
+            pstmt.setObject(i + 1, params[i]);
+        }
+
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            result = rs.getString(1); // fetch first column of first row
+        }
+
+    } catch (SQLException e) {
+        System.out.println("Error fetching single value: " + e.getMessage());
+    }
+    return result;
 }
+
+    }
+
+
