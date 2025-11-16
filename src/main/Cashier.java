@@ -12,12 +12,12 @@ public class Cashier {
 
         do {
             System.out.println("\n======================= Cashier Panel =======================");
-            System.out.println("| 1. View Products                                          |");
-            System.out.println("| 2. Update Stock                                           |");
-            System.out.println("| 3. View Sales                                             |");
-            System.out.println("| 4. Check Low Stock                                        |");
-            System.out.println("| 5. Generate Sales Report                                   |");
-            System.out.println("| 0. Logout                                                 |");
+            System.out.println("| 1.                 -- View Products --                    |");
+            System.out.println("| 2.                 -- Update Stock --                     |");
+            System.out.println("| 3.                 -- View Sales --                       |");
+            System.out.println("| 4.                 -- Check Low Stock --                  |");
+            System.out.println("| 5.                 -- Generate Sales Report --            |");
+            System.out.println("| 0.                 -- Logout --                           |");
             System.out.println("=============================================================");
             System.out.print("Enter choice: ");
             choice = sc.nextInt();

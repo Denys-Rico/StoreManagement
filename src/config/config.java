@@ -86,9 +86,9 @@ public class config {
             }
 
             pstmt.executeUpdate();
-            System.out.println("✅ Record updated successfully!");
+            System.out.println("Record updated successfully!");
         } catch (SQLException e) {
-            System.out.println("❌ Error updating record: " + e.getMessage());
+            System.out.println("Error updating record: " + e.getMessage());
         }
     }
 
