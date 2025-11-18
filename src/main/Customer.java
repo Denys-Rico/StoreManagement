@@ -169,7 +169,7 @@ public class Customer {
         System.out.println("Product ID: " + productIds.get(i) + " | Qty: " + quantities.get(i) + " | Total: ₱" + totals.get(i));
         grandTotal += totals.get(i);
     }
-    System.out.println("💰 GRAND TOTAL: ₱" + grandTotal);
+    System.out.println("GRAND TOTAL: ₱" + grandTotal);
 
   
     System.out.print("Confirm purchase? (Y/N): ");
